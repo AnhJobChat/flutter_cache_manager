@@ -15,7 +15,7 @@ import 'storage/cache_object.dart';
 class CacheStore {
   Duration cleanupRunMinInterval = const Duration(seconds: 10);
 
-  final _futureCache = <String, Future<CacheObject?>>{};
+  final _futureCache = <String, Future<CacheObject>>{};
   final _memCache = <String, CacheObject>{};
 
   FileSystem fileSystem;
@@ -27,16 +27,15 @@ class CacheStore {
   Duration get _maxAge => _config.stalePeriod;
 
   DateTime lastCleanupRun = DateTime.now();
-  Timer? _scheduledCleanup;
+  Timer _scheduledCleanup;
 
   CacheStore(Config config)
       : _config = config,
         fileSystem = config.fileSystem,
         _cacheInfoRepository = config.repo.open().then((value) => config.repo);
 
-  Future<FileInfo?> getFile(String key, {bool ignoreMemCache = false}) async {
-    final cacheObject =
-        await retrieveCacheData(key, ignoreMemCache: ignoreMemCache);
+  Future<FileInfo> getFile(String key, {bool ignoreMemCache = false}) async {
+    final cacheObject = await retrieveCacheData(key, ignoreMemCache: ignoreMemCache);
     if (cacheObject == null) {
       return null;
     }
@@ -59,19 +58,18 @@ class CacheStore {
     }
   }
 
-  Future<CacheObject?> retrieveCacheData(String key,
-      {bool ignoreMemCache = false}) async {
+  Future<CacheObject> retrieveCacheData(String key, {bool ignoreMemCache = false}) async {
     if (!ignoreMemCache && _memCache.containsKey(key)) {
       if (await _fileExists(_memCache[key])) {
         return _memCache[key];
       }
     }
     if (!_futureCache.containsKey(key)) {
-      final completer = Completer<CacheObject?>();
+      final completer = Completer<CacheObject>();
       unawaited(_getCacheDataFromDatabase(key).then((cacheObject) async {
-        if (cacheObject?.id != null && !await _fileExists(cacheObject)) {
+        if (cacheObject.id != null && !await _fileExists(cacheObject)) {
           final provider = await _cacheInfoRepository;
-          await provider.delete(cacheObject!.id!);
+          await provider.delete(cacheObject.id);
           cacheObject = null;
         }
 
@@ -88,17 +86,16 @@ class CacheStore {
     return _futureCache[key];
   }
 
-  Future<FileInfo?> getFileFromMemory(String key) async {
+  Future<FileInfo> getFileFromMemory(String key) async {
     final cacheObject = _memCache[key];
     if (cacheObject == null) {
       return null;
     }
     final file = await fileSystem.createFile(cacheObject.relativePath);
-    return FileInfo(
-        file, FileSource.Cache, cacheObject.validTill, cacheObject.url);
+    return FileInfo(file, FileSource.Cache, cacheObject.validTill, cacheObject.url);
   }
 
-  Future<bool> _fileExists(CacheObject? cacheObject) async {
+  Future<bool> _fileExists(CacheObject cacheObject) async {
     if (cacheObject == null) {
       return false;
     }
@@ -106,11 +103,11 @@ class CacheStore {
     return file.exists();
   }
 
-  Future<CacheObject?> _getCacheDataFromDatabase(String key) async {
+  Future<CacheObject> _getCacheDataFromDatabase(String key) async {
     final provider = await _cacheInfoRepository;
     final data = await provider.get(key);
     if (await _fileExists(data)) {
-      unawaited(_updateCacheDataInDatabase(data!));
+      unawaited(_updateCacheDataInDatabase(data));
     }
     _scheduleCleanup();
     return data;
@@ -169,11 +166,10 @@ class CacheStore {
     await provider.deleteAll(toRemove);
   }
 
-  Future<void> _removeCachedFile(
-      CacheObject cacheObject, List<int> toRemove) async {
+  Future<void> _removeCachedFile(CacheObject cacheObject, List<int> toRemove) async {
     if (toRemove.contains(cacheObject.id)) return;
 
-    toRemove.add(cacheObject.id!);
+    toRemove.add(cacheObject.id);
     if (_memCache.containsKey(cacheObject.key)) {
       _memCache.remove(cacheObject.key);
     }

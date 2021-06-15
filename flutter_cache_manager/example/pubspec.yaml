@@ -12,16 +12,12 @@ dependencies:
     git:
       url: git://github.com/Baseflow/baseflow_plugin_template.git
       ref: v1.0.0
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.0
   flutter:
     sdk: flutter
   flutter_cache_manager:
     path: ../
   url_launcher: ^5.4.11
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
 
 # The following section is specific to Flutter.

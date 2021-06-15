@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
+
 import 'mime_converter.dart';
 
 ///Flutter Cache Manager
@@ -14,7 +16,7 @@ import 'mime_converter.dart';
 /// from other apps or from local storage.
 abstract class FileService {
   int concurrentFetches = 10;
-  Future<FileServiceResponse> get(String url, {Map<String, String>? headers});
+  Future<FileServiceResponse> get(String url, {Map<String, String> headers});
 }
 
 /// [HttpFileService] is the most common file service and the default for
@@ -22,12 +24,10 @@ abstract class FileService {
 class HttpFileService extends FileService {
   final http.Client _httpClient;
 
-  HttpFileService({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+  HttpFileService({http.Client httpClient}) : _httpClient = httpClient ?? http.Client();
 
   @override
-  Future<FileServiceResponse> get(String url,
-      {Map<String, String>? headers}) async {
+  Future<FileServiceResponse> get(String url, {Map<String, String> headers}) async {
     final req = http.Request('GET', Uri.parse(url));
     if (headers != null) {
       req.headers.addAll(headers);
@@ -45,7 +45,7 @@ abstract class FileServiceResponse {
 
   /// [contentLength] is the total size of the content.
   /// If the size is not known beforehand contentLength is null.
-  int? get contentLength;
+  int get contentLength;
 
   /// [statusCode] is expected to conform to an http status code.
   int get statusCode;
@@ -54,7 +54,7 @@ abstract class FileServiceResponse {
   DateTime get validTill;
 
   /// [eTag] is used when asking to update the cache
-  String? get eTag;
+  String get eTag;
 
   /// Used to save the file on the storage, includes a dot. For example '.jpeg'
   String get fileExtension;
@@ -71,7 +71,7 @@ class HttpGetResponse implements FileServiceResponse {
   @override
   int get statusCode => _response.statusCode;
 
-  String? _header(String name) {
+  String _header(String name) {
     return _response.headers[name];
   }
 
@@ -79,7 +79,7 @@ class HttpGetResponse implements FileServiceResponse {
   Stream<List<int>> get content => _response.stream;
 
   @override
-  int? get contentLength => _response.contentLength;
+  int get contentLength => _response.contentLength;
 
   @override
   DateTime get validTill {
@@ -106,7 +106,7 @@ class HttpGetResponse implements FileServiceResponse {
   }
 
   @override
-  String? get eTag => _header(HttpHeaders.etagHeader);
+  String get eTag => _header(HttpHeaders.etagHeader);
 
   @override
   String get fileExtension {

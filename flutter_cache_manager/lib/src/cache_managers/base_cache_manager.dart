@@ -24,8 +24,7 @@ abstract class BaseCacheManager {
   /// The files are returned as stream. First the cached file if available, when the
   /// cached file is too old the newly downloaded file is returned afterwards.
   @Deprecated('Prefer to use the new getFileStream method')
-  Stream<FileInfo> getFile(String url,
-      {String key, Map<String, String> headers});
+  Stream<FileInfo> getFile(String url, {String key, Map<String, String> headers});
 
   /// Get the file from the cache and/or online, depending on availability and age.
   /// Downloaded form [url], [headers] can be used for example for authentication.
@@ -38,19 +37,17 @@ abstract class BaseCacheManager {
   /// set on true and the file is not available in the cache. When the file is
   /// returned from the cache there will be no progress given, although the file
   /// might be outdated and a new file is being downloaded in the background.
-  Stream<FileResponse> getFileStream(String url,
-      {String? key, Map<String, String>? headers, bool withProgress});
+  Stream<FileResponse> getFileStream(String url, {String key, Map<String, String> headers, bool withProgress});
 
   ///Download the file and add to cache
-  Future<FileInfo> downloadFile(String url,
-      {String? key, Map<String, String>? authHeaders, bool force = false});
+  Future<FileInfo> downloadFile(String url, {String key, Map<String, String> authHeaders, bool force = false});
 
   /// Get the file from the cache.
   /// Specify [ignoreMemCache] to force a re-read from the database
-  Future<FileInfo?> getFileFromCache(String key, {bool ignoreMemCache = false});
+  Future<FileInfo> getFileFromCache(String key, {bool ignoreMemCache = false});
 
   ///Returns the file from memory if it has already been fetched
-  Future<FileInfo?> getFileFromMemory(String key);
+  Future<FileInfo> getFileFromMemory(String key);
 
   /// Put a file in the cache. It is recommended to specify the [eTag] and the
   /// [maxAge]. When [maxAge] is passed and the eTag is not set the file will
@@ -61,8 +58,8 @@ abstract class BaseCacheManager {
   Future<File> putFile(
     String url,
     Uint8List fileBytes, {
-    String? key,
-    String? eTag,
+    String key,
+    String eTag,
     Duration maxAge = const Duration(days: 30),
     String fileExtension = 'file',
   });
@@ -77,8 +74,8 @@ abstract class BaseCacheManager {
   Future<File> putFileStream(
     String url,
     Stream<List<int>> source, {
-    String? key,
-    String? eTag,
+    String key,
+    String eTag,
     Duration maxAge = const Duration(days: 30),
     String fileExtension = 'file',
   });

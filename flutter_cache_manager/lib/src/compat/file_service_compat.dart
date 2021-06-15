@@ -11,8 +11,7 @@ class FileServiceCompat extends FileService {
   FileServiceCompat(this.fileFetcher);
 
   @override
-  Future<FileServiceResponse> get(String url,
-      {Map<String, String>? headers}) async {
+  Future<FileServiceResponse> get(String url, {Map<String, String> headers}) async {
     var legacyResponse = await fileFetcher(url, headers: headers);
     return CompatFileServiceGetResponse(legacyResponse);
   }
@@ -24,7 +23,7 @@ class CompatFileServiceGetResponse implements FileServiceResponse {
 
   CompatFileServiceGetResponse(this.legacyResponse);
 
-  String? _header(String name) {
+  String _header(String name) {
     return legacyResponse.header(name);
   }
 
@@ -59,7 +58,7 @@ class CompatFileServiceGetResponse implements FileServiceResponse {
   }
 
   @override
-  String? get eTag => _header(HttpHeaders.etagHeader);
+  String get eTag => _header(HttpHeaders.etagHeader);
 
   @override
   String get fileExtension {

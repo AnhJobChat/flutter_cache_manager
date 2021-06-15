@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import 'package:flutter/material.dart';
 
 ///Flutter Cache Manager
 ///Copyright (c) 2019 Rene Floor
@@ -17,9 +18,9 @@ class CacheObject {
 
   CacheObject(
     this.url, {
-    String? key,
-    required this.relativePath,
-    required this.validTill,
+    String key,
+    @required this.relativePath,
+    @required this.validTill,
     this.eTag,
     this.id,
     this.length,
@@ -29,17 +30,15 @@ class CacheObject {
   CacheObject.fromMap(Map<String, dynamic> map)
       : id = map[columnId] as int,
         url = map[columnUrl] as String,
-        key = map[columnKey] as String? ?? map[columnUrl] as String,
+        key = map[columnKey] as String ?? map[columnUrl] as String,
         relativePath = map[columnPath] as String,
-        validTill =
-            DateTime.fromMillisecondsSinceEpoch(map[columnValidTill] as int),
-        eTag = map[columnETag] as String?,
-        length = map[columnLength] as int?,
-        touched =
-            DateTime.fromMillisecondsSinceEpoch(map[columnTouched] as int);
+        validTill = DateTime.fromMillisecondsSinceEpoch(map[columnValidTill] as int),
+        eTag = map[columnETag] as String,
+        length = map[columnLength] as int,
+        touched = DateTime.fromMillisecondsSinceEpoch(map[columnTouched] as int);
 
   /// Internal ID used to represent this cache object
-  final int? id;
+  final int id;
 
   /// The URL that was used to download the file
   final String url;
@@ -56,13 +55,13 @@ class CacheObject {
   final DateTime validTill;
 
   /// eTag provided by the server for cache expiry
-  final String? eTag;
+  final String eTag;
 
   /// The length of the cached file
-  final int? length;
+  final int length;
 
   /// When the file is last used
-  final DateTime? touched;
+  final DateTime touched;
 
   Map<String, dynamic> toMap({bool setTouchedToNow = true}) {
     final map = <String, dynamic>{
@@ -71,9 +70,7 @@ class CacheObject {
       columnPath: relativePath,
       columnETag: eTag,
       columnValidTill: validTill.millisecondsSinceEpoch,
-      columnTouched:
-          (setTouchedToNow ? clock.now() : touched)?.millisecondsSinceEpoch ??
-              0,
+      columnTouched: (setTouchedToNow ? clock.now() : touched)?.millisecondsSinceEpoch ?? 0,
       columnLength: length,
       if (id != null) columnId: id,
     };
@@ -85,12 +82,12 @@ class CacheObject {
   }
 
   CacheObject copyWith({
-    String? url,
-    int? id,
-    String? relativePath,
-    DateTime? validTill,
-    String? eTag,
-    int? length,
+    String url,
+    int id,
+    String relativePath,
+    DateTime validTill,
+    String eTag,
+    int length,
   }) {
     return CacheObject(
       url ?? this.url,
